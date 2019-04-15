@@ -4,7 +4,28 @@
 
   <!-- Properties  -->
   <xacro:property name="height_from_floor" value="0.3"/>
+
   <xacro:property name="base_height" value="0.115"/>
+  <xacro:property name="base_radius" value="0.231"/>
+  <xacro:property name="base_mass" value="4.0"/>
+
+  <xacro:property name="joint_radius" value="0.109"/>
+  <xacro:property name="joint_height" value="0.08"/>
+  <xacro:property name="joint_mass" value="0.3"/>
+
+  <xacro:property name="link1_thick" value="0.109"/>
+  <xacro:property name="link1_mass" value="0.8"/>
+
+  <xacro:property name="link2_thick" value="0.087"/>
+  <xacro:property name="link2_mass" value="0.4"/>
+
+  <xacro:property name="link3_thick" value="0.06"/>
+  <xacro:property name="link3_mass" value="0.3"/>
+
+  <xacro:property name="link4_length" value="0.937"/>
+  <xacro:property name="link4_thick" value="0.06"/>
+  <xacro:property name="link4_mass" value="1.0"/>
+
   <xacro:property name="d1" value="0.87"/>
   <xacro:property name="a1" value="0.625"/>
   <xacro:property name="a2" value="0.425"/>
@@ -18,49 +39,126 @@
     <color rgba="1 1 1 1"/>
   </material>
 
+  <!-- Some Userful Interial Macros -->
+  <xacro:macro name="cylinder_inertia" params="r h m">
+    <mass value="${m}" />
+    <inertia  ixx="${(m/12)*((3*r*r)+(h*h))}"
+              iyy="${(m/12)*((3*r*r)+(h*h))}"
+              izz="${m}"
+              ixy = "0" ixz = "0" iyz = "0" />
+  </xacro:macro>
+
+  <macro name="box_inertia" params="m x y z">
+    <mass value="${m}" />
+    <inertia  ixx="${m*(y*y+z*z)/12}"
+              iyy="${m*(x*x+z*z)/12}"
+              izz="${m*(x*x+z*z)/12}"
+              ixy = "0" ixz = "0"  iyz = "0" />
+  </macro>
+  <macro name="sphere_inertia" params="m r">
+    <mass value="${m}" />
+    <inertia  ixx="${2*m*r*r/5}" ixy = "0" ixz = "0"
+              iyy="${2*m*r*r/5}" iyz = "0"
+              izz="${2*m*r*r/5}" />
+  </macro>
+
   <!-- Links  -->
   <link name="world"/>
   <link name="base_link">
      <visual>
         <geometry>
-           <mesh filename="file://$(find scara-description)/urdf/base.dae"/>
+           <mesh filename="file://$(find scara-description)/urdf/visual/base.dae"/>
         </geometry>
      </visual>
+     <collision>
+       <geometry>
+          <mesh filename="file://$(find scara-description)/urdf/collision/base.dae"/>
+       </geometry>
+     </collision>
+     <inertial>
+        <origin xyz="0 0 ${base_height/2}" rpy="0 0 0" />
+        <xacro:cylinder_inertia m="${base_mass}" r="${base_radius}" h="${base_height}" />
+     </inertial>
   </link>
   <link name="link1">
-     <visual>
+      <visual>
         <geometry>
-           <mesh filename="file://$(find scara-description)/urdf/link1.dae"/>
+          <mesh filename="file://$(find scara-description)/urdf/visual/link1.dae"/>
         </geometry>
-     </visual>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="file://$(find scara-description)/urdf/collision/link1.dae"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 ${d1/2}"/>
+        <xacro:box_inertia m="${base_mass}" x="${link1_thick}" y="${link1_thick}" z="${d1}" />
+      </inertial>
   </link>
   <link name="link2">
      <visual>
-        <geometry>
-           <mesh filename="file://$(find scara-description)/urdf/link2.dae"/>
-        </geometry>
+       <geometry>
+          <mesh filename="file://$(find scara-description)/urdf/visual/link2.dae"/>
+       </geometry>
      </visual>
+     <collision>
+       <geometry>
+          <mesh filename="file://$(find scara-description)/urdf/collision/link2.dae"/>
+       </geometry>
+     </collision>
+     <inertial>
+       <origin xyz="${a1/2} 0 ${link2_thick/2}"/>
+       <xacro:box_inertia m="${link2_mass}" x="${a1}" y="${link2_thick}" z="${link2_thick}" />
+    </inertial>
   </link>
   <link name="link3">
-     <visual>
-        <geometry>
-           <mesh filename="file://$(find scara-description)/urdf/link3.dae"/>
-        </geometry>
-     </visual>
+    <visual>
+       <geometry>
+          <mesh filename="file://$(find scara-description)/urdf/visual/link3.dae"/>
+       </geometry>
+    </visual>
+    <collision>
+      <geometry>
+         <mesh filename="file://$(find scara-description)/urdf/collision/link3.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="${a2/2} 0 ${link3_thick/2}"/>
+      <xacro:box_inertia m="${link3_mass}" x="${a2}" y="${link3_thick}" z="${link3_thick}" />
+    </inertial>
   </link>
   <link name="link4">
     <visual>
-      <geometry>
-         <mesh filename="file://$(find scara-description)/urdf/joint4.dae"/>
-      </geometry>
+       <geometry>
+          <mesh filename="file://$(find scara-description)/urdf/visual/joint4.dae"/>
+       </geometry>
     </visual>
+    <collision>
+      <geometry>
+         <mesh filename="file://$(find scara-description)/urdf/collision/joint4.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${joint_height/2}"/>
+      <xacro:cylinder_inertia m="${joint_mass}" r="${joint_radius}" h="${joint_height}" />
+    </inertial>
   </link>
   <link name="tool">
     <visual>
       <geometry>
-         <mesh filename="file://$(find scara-description)/urdf/link4.dae"/>
+         <mesh filename="file://$(find scara-description)/urdf/collision/link4.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+         <mesh filename="file://$(find scara-description)/urdf/collision/link4.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 -${l3}"/>
+      <xacro:box_inertia m="${link4_mass}" x="${link4_thick}" y="${link4_thick}" z="${link4_length}" />
+    </inertial>
   </link>
 
   <!-- Joints -->
@@ -69,51 +167,45 @@
     <child link="base_link"/>
     <origin xyz="0 0 ${height_from_floor}" rpy="0 0 0"/>
   </joint>
-
   <joint name="fixed2" type="fixed">
     <parent link="base_link"/>
     <child link="link1"/>
     <origin xyz="0 0 ${base_height}" rpy="0 0 0"/>
   </joint>
-
   <joint name="joint1" type="revolute">
     <parent link="link1"/>
     <child link="link2"/>
     <origin xyz="0 0 ${d1 - base_height}" rpy="0 0 0"/>
     <axis xyz="0 0 1" />
     <calibration rising="0.0"/>
-    <dynamics damping="0.0" friction="0.0"/>
+    <dynamics damping="${damping_value}" friction="${friction_value}"/>
     <limit effort="30" velocity="1.0" lower="-3.14" upper="3.14" />
   </joint>
-
   <joint name="joint2" type="revolute">
     <parent link="link2"/>
     <child link="link3"/>
     <origin xyz="${a1} 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1" />
     <calibration rising="0.0"/>
-    <dynamics damping="0.0" friction="0.0"/>
+    <dynamics damping="${damping_value}" friction="${friction_value}"/>
     <limit effort="30" velocity="1.0" lower="-2.5" upper="2.5" />
   </joint>
-
   <joint name="joint3" type="revolute">
     <parent link="link3"/>
     <child link="link4"/>
     <origin xyz="${a2} 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1" />
     <calibration rising="0.0"/>
-    <dynamics damping="0.0" friction="0.0"/>
+    <dynamics damping="${damping_value}" friction="${friction_value}"/>
     <limit effort="30" velocity="1.0" lower="-2.5" upper="2.5" />
   </joint>
-
   <joint name="joint4" type="prismatic">
     <parent link="link4"/>
     <child link="tool"/>
     <origin xyz="0 0 -${l3}" rpy="3.14 0 0"/>
     <axis xyz="0 0 1" />
     <calibration rising="0.0"/>
-    <dynamics damping="0.0" friction="0.0"/>
+    <dynamics damping="${damping_value}" friction="${friction_value}"/>
     <limit effort="30" velocity="1.0" lower="-0.2" upper="0.3" />
   </joint>
-
 </robot>

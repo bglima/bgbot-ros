@@ -66,6 +66,29 @@ l3 = 0.40 m
 </robot>
 ```
 
+#### Step 4: Define the inertia of links... Following macros might help!
+
+
+```
+<macro name="cylinder_inertia" params="m r h">
+      <inertia  ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0"
+                  iyy="${m*(3*r*r+h*h)/12}" iyz = "0"
+                  izz="${m*r*r/2}" />
+      </macro>
+
+<macro name="box_inertia" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                  iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                  izz="${m*(x*x+z*z)/12}" />
+</macro>
+
+<macro name="sphere_inertia" params="m r">
+        <inertia  ixx="${2*m*r*r/5}" ixy = "0" ixz = "0"
+                  iyy="${2*m*r*r/5}" iyz = "0"
+                  izz="${2*m*r*r/5}" />
+</macro>
+```
+
 
 #### Step 4: Enjoy your robot!
 
@@ -75,14 +98,24 @@ l3 = 0.40 m
 
 ### References
 
+* Good places to start
+
+https://ni.www.techfak.uni-bielefeld.de/files/URDF-XACRO.pdf
+
+http://wustl.probablydavid.com/publications/URDFandYou.pdf
+
+* About joints and links
+
 http://wiki.ros.org/urdf/XML/joint
 
 http://wiki.ros.org/urdf/XML/link
 
-http://library.isr.ist.utl.pt/docs/roswiki/urdf(2f)Tutorials(2f)Using(20)Xacro(20)to(20)Clean(20)Up(20)a(20)URDF(20)File.html
+* About URDF and Xacro
 
-https://ni.www.techfak.uni-bielefeld.de/files/URDF-XACRO.pdf
+http://library.isr.ist.utl.pt/docs/roswiki/urdf(2f)Tutorials(2f)Using(20)Xacro(20)to(20)Clean(20)Up(20)a(20)URDF(20)File.html
 
 http://wiki.ros.org/xacro
 
-http://wustl.probablydavid.com/publications/URDFandYou.pdf
+* About exporting mass and intertia tensor in Blender 3D
+
+https://github.com/dfki-ric/phobos/wiki/Mass-and-Inertia
