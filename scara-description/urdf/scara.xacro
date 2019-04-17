@@ -3,11 +3,11 @@
 <robot name="robotiq_85_gripper" xmlns:xacro="http://ros.org/wiki/xacro">
 
   <!-- Properties  -->
-  <xacro:property name="height_from_floor" value="0.3"/>
+  <xacro:property name="height_from_floor" value="0"/>
 
   <xacro:property name="base_height" value="0.115"/>
   <xacro:property name="base_radius" value="0.231"/>
-  <xacro:property name="base_mass" value="4.0"/>
+  <xacro:property name="base_mass" value="10.0"/>
 
   <xacro:property name="joint_radius" value="0.109"/>
   <xacro:property name="joint_height" value="0.08"/>
@@ -48,22 +48,22 @@
               ixy = "0" ixz = "0" iyz = "0" />
   </xacro:macro>
 
-  <macro name="box_inertia" params="m x y z">
+  <xacro:macro name="box_inertia" params="m x y z">
     <mass value="${m}" />
     <inertia  ixx="${m*(y*y+z*z)/12}"
               iyy="${m*(x*x+z*z)/12}"
               izz="${m*(x*x+z*z)/12}"
               ixy = "0" ixz = "0"  iyz = "0" />
-  </macro>
-  <macro name="sphere_inertia" params="m r">
+  </xacro:macro>
+  <xacro:macro name="sphere_inertia" params="m r">
     <mass value="${m}" />
     <inertia  ixx="${2*m*r*r/5}" ixy = "0" ixz = "0"
               iyy="${2*m*r*r/5}" iyz = "0"
               izz="${2*m*r*r/5}" />
-  </macro>
+  </xacro:macro>
 
   <!-- Links  -->
-  <link name="world"/>
+  <link name="base_world"/>
   <link name="base_link">
      <visual>
         <geometry>
@@ -163,7 +163,7 @@
 
   <!-- Joints -->
   <joint name="fixed1" type="fixed">
-    <parent link="world"/>
+    <parent link="base_world"/>
     <child link="base_link"/>
     <origin xyz="0 0 ${height_from_floor}" rpy="0 0 0"/>
   </joint>
