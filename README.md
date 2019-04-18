@@ -124,3 +124,7 @@ http://wiki.ros.org/xacro
 * About exporting mass and intertia tensor in Blender 3D
 
 https://github.com/dfki-ric/phobos/wiki/Mass-and-Inertia
+
+* About Gazebo controllers
+
+https://answers.ros.org/question/273947/moving-joints-in-gazebo-simple-example/
