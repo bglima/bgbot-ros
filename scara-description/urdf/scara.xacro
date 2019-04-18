@@ -188,7 +188,7 @@
     <axis xyz="0 0 1" />
     <calibration rising="0.0"/>
     <dynamics damping="${damping_value}" friction="${friction_value}"/>
-    <limit effort="30" velocity="1.0" lower="-2.5" upper="2.5" />
+    <limit effort="30" velocity="1.0" lower="-3.14" upper="3.14" />
   </joint>
   <joint name="joint3" type="revolute">
     <parent link="link3"/>
@@ -197,7 +197,7 @@
     <axis xyz="0 0 1" />
     <calibration rising="0.0"/>
     <dynamics damping="${damping_value}" friction="${friction_value}"/>
-    <limit effort="30" velocity="1.0" lower="-2.5" upper="2.5" />
+    <limit effort="30" velocity="1.0" lower="-3.14" upper="3.14" />
   </joint>
   <joint name="joint4" type="prismatic">
     <parent link="link4"/>
