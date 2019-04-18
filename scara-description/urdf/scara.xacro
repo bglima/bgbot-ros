@@ -208,4 +208,49 @@
     <dynamics damping="${damping_value}" friction="${friction_value}"/>
     <limit effort="30" velocity="1.0" lower="-0.2" upper="0.3" />
   </joint>
+
+  <!-- ROS Control plugin for Gazebo -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/scara</robotNamespace>
+    </plugin>
+  </gazebo>
+
+  <!-- Transmission -->
+  <transmission name="jointTransmission1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="motor1">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint1">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="jointTransmission2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="motor2">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint2">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="jointTransmission3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="motor3">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint3">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="jointTransmission4">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="motor4">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint4">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
 </robot>

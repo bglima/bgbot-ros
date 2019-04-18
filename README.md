@@ -11,6 +11,9 @@ catkin_make
 # Due to a bug in Ros Melodic, you need to export LC_NUMERIC as follows...
 export LC_NUMERIC="en_US.UTF-8"
 
+# And install controller for Gazebo
+sudo apt install ros-melodic-joint-trajectory-controller
+
 roslaunch scara-description display.launch gui:=true
 ```
 
@@ -95,6 +98,8 @@ l3 = 0.40 m
 ![image info](./extras/print2.png)
 
 ![image info](./extras/print3.png)
+
+![image info](./extras/print5.png)
 
 ### References
 
