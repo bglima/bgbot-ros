@@ -1,8 +1,10 @@
+#!/usr/bin/env python
 import rospy
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from sensor_msgs.msg import JointState
 import numpy as np
 from math import sin, cos, pi
+import time
 
 # Initializing variables
 current_q = np.matrix([-1, -1, -1, -1]).reshape((4, 1))
@@ -38,8 +40,8 @@ def calculateP(q):
     Direct kinematics to extract cartesian position
     """
     pos = np.matrix([
-        a2 * cos(q[0, 0]+q[1, 0]) + a1 * cos(q[1, 0]),
-        a2 * sin(q[0, 0]+q[1, 0]) + a2 * sin(q[1, 0]),
+        a1 * cos(q[0, 0]) + a2 * cos(q[0, 0]+q[1, 0]),
+        a1 * sin(q[0, 0]) + a2 * sin(q[0, 0]+q[1, 0]),
         d1 - (q[3, 0] + l3)
     ]).reshape((3, 1));
     return pos
@@ -49,8 +51,8 @@ def calculateJ(q):
     Calculate current Jacobian matrix
     """
     J = np.matrix([
-        [ -a1*sin(q[0, 0])-a2*sin(q[0, 0]+q[1, 0]), -a2*sin(q[0, 0]+q[2, 0]), 0, 0],
-        [  a1*cos(q[0, 0])+a2*sin(q[0, 0]+q[1, 0]),  a2*cos(q[0, 0]+q[2, 0]), 0, 0],
+        [ -a1*sin(q[0, 0])-a2*sin(q[0, 0]+q[1, 0]), -a2*sin(q[0, 0]+q[1, 0]), 0, 0],
+        [  a1*cos(q[0, 0])+a2*cos(q[0, 0]+q[1, 0]),  a2*cos(q[0, 0]+q[1, 0]), 0, 0],
         [  0,  0, 0, -1]
     ]);
     return J
@@ -64,7 +66,7 @@ def calculatePseudoInv(J, l):
 
 # Main function
 if __name__ == '__main__':
-    rospy.init_node('scara_controller', anonymous=True)
+    rospy.init_node('scara_controller', anonymous=True, log_level=rospy.DEBUG)
     control_pub = rospy.Publisher('/scara/trajectory_controller/command', JointTrajectory, queue_size=1)
     joint_sub = rospy.Subscriber('/scara/joint_states', JointState, updateQ)
     freq = 15.0
@@ -73,14 +75,20 @@ if __name__ == '__main__':
     current_time = rospy.Time.now()
     last_time = rospy.Time.now()
 
-    print('Starting to send points to trajectory...')
-    radius = 0.8
-    height = 0.52
 
-    rate.sleep()
-    my_p = calculateP(current_q)
+    radius = 0.9
+    height = 0.5
+    rospy.loginfo('Circular trajectory with radius {} and height {}...'.format(radius, height))
 
-    for i in range(180):
+    # Set an initial position
+    initial_q = [-0.4, 0.8, 0, 0]
+    for i in range(0, 50):
+        current_time = rospy.Time.now()
+        sendQ(current_time + rospy.Duration(dt), control_pub, initial_q)
+        rate.sleep()
+
+    # Start trajectory
+    for i in range(0, 180):
         # Update time variables
         last_time = current_time
         current_time = rospy.Time.now()
@@ -97,12 +105,19 @@ if __name__ == '__main__':
         error = np.matrix(desired_p - current_p)
         error_vel = error / dt
 
-        # # Calculate necessary displacement in joint space
+        # Calculate necessary velocity in joint space
         J = calculateJ(current_q)
-        Jinv = calculatePseudoInv(J, 2.0)
+        Jinv = calculatePseudoInv(J, 0.5)
         q_vel = Jinv * error_vel
+
         # Calculate next joint variable
-        desired_q = current_q - q_vel * dt
-        print('Error in cartesian space XYZ: {}...'.format(error.tolist()))
-        sendQ(current_time, control_pub, desired_q)
+        desired_q = current_q + q_vel * dt
+
+        # Showing calculated variables:
+        rospy.loginfo('- current_p......: {}'.format(current_p.tolist()))
+        rospy.loginfo('- desired_p......: {}'.format(desired_p.tolist()))
+        rospy.loginfo('- error XYZ......: {}'.format(error.tolist()))
+        rospy.loginfo('- velocity XYZ...: {}\n'.format(q_vel.tolist()))
+
+        sendQ(current_time + rospy.Duration(dt), control_pub, desired_q)
         rate.sleep()
